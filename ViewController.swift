@@ -50,17 +50,17 @@ class ViewController: UIViewController,UICollectionViewDelegate, UICollectionVie
         cell.backgroundColor = UIColor.blueColor()
         
         
-        var label : UILabel!
-        if cell.viewWithTag(index) == nil {
-            label = UILabel()
-            label.frame = CGRectMake(0, 0, 375, 40)
-            label.backgroundColor = UIColor.purpleColor()
-            label.tag = index
-            cell.addSubview(label)
-        } else {
-            label = cell.viewWithTag(index) as! UILabel
-        }
-        label.text = "\(cell.bounds)"        
+//        var label : UILabel!
+//        if cell.viewWithTag(index) == nil {
+//            label = UILabel()
+//            label.frame = CGRectMake(0, 0, 375, 40)
+//            label.backgroundColor = UIColor.purpleColor()
+//            label.tag = index
+//            cell.addSubview(label)
+//        } else {
+//            label = cell.viewWithTag(index) as! UILabel
+//        }
+//        label.text = "\(cell.bounds)"        
         return cell
     }
     
@@ -74,12 +74,13 @@ class ViewController: UIViewController,UICollectionViewDelegate, UICollectionVie
     
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
         
-        print("indexPath---->\(indexPath.section)  \(indexPath.item)")
-        return CGSizeMake(375 - 80, 44 + 20 * CGFloat(indexPath.item + indexPath.section))
+        return CGSizeMake(375, 50)
     }
     
+    
+    
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAtIndex section: Int) -> UIEdgeInsets {
-        return UIEdgeInsetsMake(10, 80, 40, 0)
+        return UIEdgeInsetsMake(10, 0, 10, 0)
     }
     
 }

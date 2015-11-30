@@ -22,14 +22,14 @@ class CreditDetailListLayout: UICollectionViewLayout {
     
     // MARK: - Assist Variable
     private var _currentHeight: CGFloat = 0
-    private var _sectionEdgeInset: [UIEdgeInsets] = []
+    private var _sectionEdgeInset: [Int:UIEdgeInsets] = [:]
     private var _itemEdgeInset: [NSIndexPath:UIEdgeInsets] = [:]
     
     private var _detailCount: Int = 0
     
     private var _itemAttributes: [NSIndexPath:UICollectionViewLayoutAttributes] = [:]
-    private var _headersAttributes: [UICollectionViewLayoutAttributes] = []
-    private var _footersAttributes: [UICollectionViewLayoutAttributes] = []
+    private var _headersAttributes: [NSIndexPath:UICollectionViewLayoutAttributes] = [:]
+    private var _footersAttributes: [NSIndexPath:UICollectionViewLayoutAttributes] = [:]
     
     private var _detailType : VIPCardDetailType!
     
@@ -54,24 +54,43 @@ class CreditDetailListLayout: UICollectionViewLayout {
         _headersAttributes.removeAll()
         _itemAttributes.removeAll()
         _currentHeight = 0
+        _sectionEdgeInset = [
+            0:UIEdgeInsetsMake(10, 0, 10, 0),
+            1:UIEdgeInsetsMake(10, 0, 10, 0)
+        ]
+        
+        _itemEdgeInset = [
+            NSIndexPath(forItem: 0, inSection: 0): UIEdgeInsetsMake(10, 0, 10, 0),
+            NSIndexPath(forItem: 1, inSection: 0): UIEdgeInsetsMake(10, 0, 10, 0),
+            NSIndexPath(forItem: 0, inSection: 1): UIEdgeInsetsMake(10, 0, 10, 0),
+            NSIndexPath(forItem: 1, inSection: 1): UIEdgeInsetsMake(10, 0, 10, 0),
+            NSIndexPath(forItem: 0, inSection: 2): UIEdgeInsetsMake(10, 0, 10, 0),
+            NSIndexPath(forItem: 1, inSection: 2): UIEdgeInsetsMake(10, 0, 10, 0),
+            NSIndexPath(forItem: 0, inSection: 3): UIEdgeInsetsMake(10, 0, 10, 0),
+            NSIndexPath(forItem: 1, inSection: 3): UIEdgeInsetsMake(10, 0, 10, 0),
+        ]
         
         let collectionView = self.collectionView
         let width = (collectionView?.bounds.width)!
-        var headerY: CGFloat = 0
+        var top: CGFloat = 0
         
         for section in 0...1 {
         
+
             //Header
             //选项卡header
             var headerHeight: CGFloat = 0
             if section == 1 {
                 headerHeight = 80
             }
+            let headerIndexPath = NSIndexPath(forItem: 0, inSection: section)
+            let layoutAtt = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind:kHeaderLayoutAttribute, withIndexPath: headerIndexPath)
             
-            let layoutAtt = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind:kHeaderLayoutAttribute, withIndexPath: NSIndexPath(forItem: 0, inSection: 1))
-            layoutAtt.frame = CGRectMake(0, headerY, width, headerHeight)
-            _headersAttributes.append(layoutAtt)
+            top += _sectionEdgeInset[section]!.top
             
+            layoutAtt.frame = CGRectMake(0, top, width, headerHeight)
+            _headersAttributes[headerIndexPath] = layoutAtt
+            top = CGRectGetMaxY(layoutAtt.frame) + _itemEdgeInset[headerIndexPath]!.bottom
             //Item
             //卡片信息layout
             var layoutAtt_0 : UICollectionViewLayoutAttributes!
@@ -80,6 +99,8 @@ class CreditDetailListLayout: UICollectionViewLayout {
                 let indexPath = NSIndexPath(forItem: idx, inSection: 1)
                 layoutAtt_0 = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
                 
+                top += _itemEdgeInset[indexPath]!.top
+                
                 //普通cell
                 layoutAtt_0.size = CGSizeMake(width, 50)
                 _itemAttributes[indexPath] = layoutAtt_0
@@ -87,7 +108,7 @@ class CreditDetailListLayout: UICollectionViewLayout {
                 switch _detailType! {
                     
                 case .Money:
-                    layoutAtt.size = CGSizeMake(width, 50 )
+                    layoutAtt.frame = CGRectMake(0, top, width, 50)
                     
                     break
                 case .Credit:
@@ -97,9 +118,12 @@ class CreditDetailListLayout: UICollectionViewLayout {
                     
                 }
                 
-                
+                top += _itemEdgeInset[indexPath]!.bottom
             }
-            _currentHeight = CGRectGetMaxY(layoutAtt_0.frame)
+            
+            top += _sectionEdgeInset[section]!.bottom
+            
+            _currentHeight = top
             
             //Footer
         }
@@ -111,14 +135,17 @@ class CreditDetailListLayout: UICollectionViewLayout {
     
     override func collectionViewContentSize() -> CGSize {
         
-        print(_currentHeight)
+        self.collectionView?.backgroundView?.backgroundColor = UIColor.yellowColor()
         
+        let rct = CGSizeMake(self.collectionView!.frame.width, _currentHeight)
+        print(rct)
         return CGSizeMake(self.collectionView!.frame.width, _currentHeight)
     }
     
-//    override func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-//        return _itemAttributes
-//    }
+    override func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
+        let values = Array(_itemAttributes.values)
+        return values
+    }
     
     override func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
         return _itemAttributes[indexPath]
